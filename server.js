@@ -2,10 +2,17 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const {Server}=require("socket.io");
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors(
+    {
+        origin:["http://localhost:3000","https://chat-app-frontend-link.netlify.app"],
+        methods:["GET","POST"],
+        credentials:true
+    }
+));
 app.use(express.json());
 
 // Simple test route
@@ -15,12 +22,13 @@ app.get('/', (req, res) => {
 
 const server = http.createServer(app);
 
-const io = socketIo(server, {
-    cors: {
-        origin: "*", // You can replace * with your frontend URL for better security
-        methods: ["GET", "POST"]
-    }
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://your-frontend-link.netlify.app"],
+    methods: ["GET", "POST"]
+  }
 });
+
 
 io.on('connection', (socket) => {
     console.log('New client connected');
